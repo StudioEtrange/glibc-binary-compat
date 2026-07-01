@@ -1,13 +1,13 @@
-# glibc-compat-node-vscode
+# glibc-binary-compat
 
 * Goal
 
     Build and use a custom glibc runtime to run binaries on older Linux systems where the system glibc is too old.
 
     Allow to build a custom glibc (script 1) and patch any binary to use the built glibc by linking to it (script 2).
-    A typical use case is to be able to use Node.js on legacy systems uch as RHEL/CentOS 7 where the system glibc is tool old for modern Node.js version.
+    A typical use case is running recent versions of Node.js on legacy systems such as RHEL/CentOS 7 where the system glibc is tool old for modern Node.js versions.
 
-    Another use case is to also allows VS Code Remote SSH to work on older Linux systems by ensuring that the Node.js binary bundled with VS Code Server is patched to use the custom glibc runtime, by deploying a hook at each SSH connexion. (script 3)
+    Another use case is making VS Code Remote SSH work on older Linux systems by ensuring that the Node.js binary bundled with VS Code Server is patched to use the custom glibc runtime. This is done by installing a hook executed at each SSH connection. (script 3)
 
 
 * Scripts
