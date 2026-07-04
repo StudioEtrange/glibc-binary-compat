@@ -76,7 +76,7 @@ usage() {
     echo "  <nb processor>: Processor total number used for build gcc. Default value is all processor. (can be set using env variable NB_PROC)"
     echo
     echo "Sample command:"
-    echo "  $0 '$HOME/custom-glibc239-runtime' '2.39' '11.4.0' '3.10' 'AUTO'"
+    echo "  $0 \"\$HOME/custom-glibc239-runtime\" \"2.39\" \"11.4.0\" \"3.10\" \"AUTO\""
 }
 
 info() {

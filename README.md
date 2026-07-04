@@ -12,8 +12,8 @@ Another use case is making VS Code Remote SSH work on older Linux systems by ens
 
 ## Scripts
 
-  1. `build-custom-glibc-runtime.sh` : build a custom glibc runtime. Use `build-custom-glibc-runtime.sh -h` for command help.
-  2. `patch-with-custom-glibc.sh` : patch a binary so that is uses the custom glibc runtime,
+  1. `build-custom-glibc-runtime.sh` : build a custom glibc runtime. Use `build-custom-glibc-runtime.sh -h` for script help.
+  2. `patch-with-custom-glibc.sh` : patch a binary so that is uses the custom glibc runtime. Use `patch-with-custom-glibc.sh -h` for script help.
   3. `install-vscode-server-patch-hook.sh` : install a hook in `$HOME/.ssh/rc` to automatically, at each SSH conection, patch the Node.js binary used by VS Code Server under `$HOME/.vscode-server` (NOTE : at the first VS Code Remote SSH connexion,you may have to reconnect to SSH once again, see STEP 3 below)
   
 ---
@@ -38,7 +38,7 @@ VS Code Server needs linux minimal requirements : kernel >= 4.18, glibc >=2.28, 
   * The script will autodownload glibc code source to build it.
     ```
     cd $HOME/glibc-binary-compat
-    ./build-custom-glibc-runtime.sh "$HOME/custom-glibc2228-runtime" "2.28"
+    ./build-custom-glibc-runtime.sh "$HOME/custom-glibc228-runtime" "2.28"
     ```
 
     * ALTERNATIVE method for 2 :

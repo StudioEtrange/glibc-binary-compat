@@ -3,34 +3,51 @@
 
 set -eu
 
-# --- Config ---
+# --- NOTES ---
+# Link a binary to a custom built glibc runtime
+# Sample usage :
+#    export CUSTOM_GLIBC_PATH="$HOME/custom-glibc228-runtime"
+#    export CUSTOM_GLIBC_INTERPRETER="$HOME/custom-glibc228-runtime/lib/ld-linux-x86-64.so.2"
+# 	./patch-with-custom-glibc.sh "tool" "$HOME/folder/to/binary"
+#
 
-BINARY_TO_PATCH="${1:-}"
-FOLDER_TO_PATCH_ROOT="${2:-}"
+# ---Default config ---
+DEFAULT_GLIBC_RUNTIME_PATH="/opt/custom-glibc228-runtime"
+DEFAULT_INTERPRETER="${DEFAULT_GLIBC_RUNTIME_PATH}/lib/ld-linux-x86-64.so.2"
 
-EXPECTED_INTERPRETER="${CUSTOM_GLIBC_LINKER:-/opt/custom-glibc228-runtime/lib/ld-linux-x86-64.so.2}"
-EXPECTED_RPATH="${CUSTOM_GLIBC_PATH:-/opt/custom-glibc228-runtime/lib:/opt/custom-glibc228-runtime/rtlib}"
+usage() {
+    echo "Link a binary to a custom built glibc runtime"
+    echo
+    echo
+    echo "$0 <binary filename> <binary search folder>"
+    echo
+    echo Arguments:
+    echo "  <binary filename>: Binary file to link to custom built glibc runtime"
+    echo "  <binary search folder>: Seach path to found binary file"
+    echo 
+    echo "Required environment variables:"
+    echo "  CUSTOM_GLIBC_PATH: Path to custom glibc runtime built with build-custom-glibc-runtime script, which contains /lib and /rtlib folders (i.e: /opt/custom-glibc239-runtime)"
+    echo "                            Default value is ${DEFAULT_GLIBC_RUNTIME_PATH}"
+    echo "  CUSTOM_GLIBC_INTERPRETER: Path to dynamic loader/interpreter. (i.e: /opt/custom-glibc239-runtime/lib/ld-linux-x86-64.so.2)"
+    echo "                            Default value is ${DEFAULT_INTERPRETER}"
+    echo
+    echo "Sample command:"
+    echo "  export CUSTOM_GLIBC_PATH=\"\$HOME/custom-glibc239-runtime\""
+    echo "  export CUSTOM_GLIBC_INTERPRETER=\"\$HOME/custom-glibc239-runtime/lib/ld-linux-x86-64.so.2\""
+    echo "  $0 \"tool\" \"\$HOME/folder/to/binary\""
+}
 
-PATCH_WORKSPACE="$HOME/.patch-workspace/$(basename "${FOLDER_TO_PATCH_ROOT}")"
 
-if [ -z "$BINARY_TO_PATCH" ]; then
-    echo "missing first argument : binary name to patch"
-    exit 0
-fi
 
-if [ -z "$FOLDER_TO_PATCH_ROOT" ]; then
-    echo "missing second argument : folder where to find binary to patch"
-    exit 0
-fi
 
 print_info() {
-    f="$1"
+    local f="${1}"
     echo "Current interpreter : $("${PATCHELF}" --print-interpreter "${f}" 2>/dev/null || true)"
     echo "Current rpath : $( "${PATCHELF}" --print-rpath "${f}" 2>/dev/null || true)"
 }
 
 patch() {
-    f="$1"
+    local f="$1"
     [ -f "${f}" ] || return 0
         
     echo "----------------------------"
@@ -58,14 +75,67 @@ patch() {
     return 0
 }
 
-if [ ! -d "${FOLDER_TO_PATCH_ROOT}" ]; then
-    echo "VS Code server home do not exist, vs code server might not be installed" >&2
-    exit 0
+
+info() {
+    echo "Link a binary to a custom built glibc runtime"
+    echo
+    echo "binary: $BINARY_TO_PATCH"
+    echo "binary search folder: $FOLDER_TO_PATCH_ROOT"
+    echo 
+    echo "custom glibc runtime path: ${CUSTOM_GLIBC_PATH:-$DEFAULT_GLIBC_RUNTIME_PATH} "
+    echo "interpreter: $EXPECTED_INTERPRETER"
+}
+
+
+# --- Main script ---
+case "${1:-}" in
+    "-h"|"--help"|"-help") 
+        usage
+        exit 0
+        ;;
+esac
+
+BINARY_TO_PATCH="${1:-}"
+FOLDER_TO_PATCH_ROOT="${2:-}"
+
+
+if [ -z "$BINARY_TO_PATCH" ]; then
+    echo "ERROR: missing first argument : binary name to patch"
+    echo
+    usage
+    exit 1
 fi
 
-# LOCK for multiple remote ssh connection
-LOCK_DIR="${PATCH_WORKSPACE}/vscode-server-patch.lock.d"
-mkdir -p "$PATCH_WORKSPACE"
+if [ -z "$FOLDER_TO_PATCH_ROOT" ]; then
+    echo "ERROR: missing second argument : folder where to find binary to patch"
+    echo
+    usage
+    exit 1
+fi
+
+if [ ! -d "${FOLDER_TO_PATCH_ROOT}" ]; then
+    echo "ERROR: search folder do not exists $FOLDER_TO_PATCH_ROOT" >&2
+    echo
+    usage
+    exit 1
+fi
+
+FOLDER_TO_PATCH_ROOT="${FOLDER_TO_PATCH_ROOT}/"
+PATCH_WORKSPACE="$HOME/.patch-workspace/$(basename "${FOLDER_TO_PATCH_ROOT}")"
+
+DEFAULT_EXTENDED_RPATH="${DEFAULT_GLIBC_RUNTIME_PATH}/lib:${DEFAULT_GLIBC_RUNTIME_PATH}/rtlib"
+[ ! "${CUSTOM_GLIBC_PATH:-}" = "" ] && EXTENDED_USER_RPATH="${CUSTOM_GLIBC_PATH}/lib:${CUSTOM_GLIBC_PATH}/rtlib" || EXTENDED_USER_RPATH=""
+EXPECTED_RPATH="${EXTENDED_USER_RPATH:-DEFAULT_EXTENDED_RPATH}"
+
+EXPECTED_INTERPRETER="${CUSTOM_GLIBC_INTERPRETER:-$DEFAULT_INTERPRETER}"
+
+
+
+info
+
+# LOCK when using multiple remote ssh connection (which is the case of VS Code Remote SSH)
+LOCK_DIR="${PATCH_WORKSPACE}/patch.lock.d"
+mkdir -p "${PATCH_WORKSPACE}"
 # purge old lock (>1 day)
 [ -d "$LOCK_DIR" ] && find "$LOCK_DIR" -maxdepth 0 -mtime +0 -exec rm -rf {} \; 2>/dev/null || true
 if ! mkdir "$LOCK_DIR" 2>/dev/null; then
