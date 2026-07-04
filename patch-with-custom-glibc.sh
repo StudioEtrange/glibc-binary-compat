@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # patch a binary interpreter/rpath with patchelf
 
 set -eu
