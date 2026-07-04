@@ -4,17 +4,18 @@ _CURRENT_RUNNING_DIR="$( cd "$( dirname "." )" && pwd )"
 
 
 # --- NOTES ---
-# You could use this script directly on a host
-# Sample usage on a host to install in $HOME/custom-glibc228-runtime
-# 	export NB_PROC="AUTO"
-# 	./build-custom-glibc-runtime.sh "$HOME/custom-glibc228-runtime"
+# Build a custom glibc runtime on a host
+# Sample usage :
+# 	./build-custom-glibc-runtime.sh "$HOME/custom-glibc228-runtime" "2.28"
+# 	./build-custom-glibc-runtime.sh "$HOME/custom-glibc239-runtime" "2.39" "11.4.0" "3.10" "AUTO"
 #
 # To use it in a container you could use distrobox, to run this script inside it
 # 	distrobox rm buildenv --yes
 # 	distrobox create --image oraclelinux:7.9 --name buildenv --yes
 # 	distrobox enter buildenv
 # Then inside the container, you can run this script to build glibc:
-# 	./build-custom-glibc-runtime.sh $HOME/custom-glibc228-runtime
+# 	export NB_PROC="5"
+# 	./build-custom-glibc-runtime.sh $HOME/custom-glibc228-runtime "$HOME/custom-glibc228-runtime" "2.28"
 #
 # Sample for copying glibc result to /opt/custom-glibc228-runtime
 #   sudo rm -rf /opt/custom-glibc228-runtime
@@ -29,10 +30,10 @@ _CURRENT_RUNNING_DIR="$( cd "$( dirname "." )" && pwd )"
 
 # --- Variables ---
 # get external environment variable and fix default value
-KERNEL_SUPPORTED_VERSION="${KERNEL_SUPPORTED_VERSION:-3.10}"
 GLIBC_VERSION="${GLIBC_VERSION:-2.28}"
 # https://anaconda.org/channels/conda-forge/packages/gcc/overview
 GCC_VERSION="${GCC_VERSION:-8.5.0}"
+KERNEL_SUPPORTED_VERSION="${KERNEL_SUPPORTED_VERSION:-3.10}"
 NB_PROC="${NB_PROC:-AUTO}"
 
 PROJECT_WORKSPACE_ROOT="$HOME/.build-custom-glibc-runtime"
