@@ -7,7 +7,7 @@ set -eu
 # Link a binary to a custom built glibc runtime
 # Sample usage :
 #    export CUSTOM_GLIBC_PATH="$HOME/custom-glibc228-runtime"
-#    export CUSTOM_GLIBC_INTERPRETER="$HOME/custom-glibc228-runtime/lib/ld-linux-x86-64.so.2"
+#    export CUSTOM_GLIBC_LINKER="$HOME/custom-glibc228-runtime/lib/ld-linux-x86-64.so.2"
 # 	./patch-with-custom-glibc.sh "tool" "$HOME/folder/to/binary"
 #
 
@@ -28,12 +28,12 @@ usage() {
     echo "Required environment variables:"
     echo "  CUSTOM_GLIBC_PATH: Path to custom glibc runtime built with build-custom-glibc-runtime script, which contains /lib and /rtlib folders (i.e: /opt/custom-glibc239-runtime)"
     echo "                            Default value is ${DEFAULT_GLIBC_RUNTIME_PATH}"
-    echo "  CUSTOM_GLIBC_INTERPRETER: Path to dynamic loader/interpreter. (i.e: /opt/custom-glibc239-runtime/lib/ld-linux-x86-64.so.2)"
+    echo "  CUSTOM_GLIBC_LINKER: Path to dynamic loader/interpreter. (i.e: /opt/custom-glibc239-runtime/lib/ld-linux-x86-64.so.2)"
     echo "                            Default value is ${DEFAULT_INTERPRETER}"
     echo
     echo "Sample command:"
     echo "  export CUSTOM_GLIBC_PATH=\"\$HOME/custom-glibc239-runtime\""
-    echo "  export CUSTOM_GLIBC_INTERPRETER=\"\$HOME/custom-glibc239-runtime/lib/ld-linux-x86-64.so.2\""
+    echo "  export CUSTOM_GLIBC_LINKER=\"\$HOME/custom-glibc239-runtime/lib/ld-linux-x86-64.so.2\""
     echo "  $0 \"tool\" \"\$HOME/folder/to/binary\""
 }
 
@@ -127,7 +127,7 @@ DEFAULT_EXTENDED_RPATH="${DEFAULT_GLIBC_RUNTIME_PATH}/lib:${DEFAULT_GLIBC_RUNTIM
 [ ! "${CUSTOM_GLIBC_PATH:-}" = "" ] && EXTENDED_USER_RPATH="${CUSTOM_GLIBC_PATH}/lib:${CUSTOM_GLIBC_PATH}/rtlib" || EXTENDED_USER_RPATH=""
 EXPECTED_RPATH="${EXTENDED_USER_RPATH:-DEFAULT_EXTENDED_RPATH}"
 
-EXPECTED_INTERPRETER="${CUSTOM_GLIBC_INTERPRETER:-$DEFAULT_INTERPRETER}"
+EXPECTED_INTERPRETER="${CUSTOM_GLIBC_LINKER:-$DEFAULT_INTERPRETER}"
 
 
 

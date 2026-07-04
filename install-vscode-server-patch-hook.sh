@@ -7,7 +7,7 @@ VSCODE_SERVER_ROOT="${HOME}/.vscode-server"
 
 
 CUSTOM_GLIBC_PATH="${VSCODE_SERVER_CUSTOM_GLIBC_PATH:-/opt/custom-glibc228-runtime}"
-CUSTOM_GLIBC_INTERPRETER="${VSCODE_SERVER_CUSTOM_GLIBC_LINKER:-/opt/custom-glibc228-runtime/lib/ld-linux-x86-64.so.2}"
+CUSTOM_GLIBC_LINKER="${VSCODE_SERVER_CUSTOM_GLIBC_LINKER:-/opt/custom-glibc228-runtime/lib/ld-linux-x86-64.so.2}"
 
 PATCH_WORKSPACE="$HOME/.patch-workspace/$(basename "${VSCODE_SERVER_ROOT}")"
 SCRIPT_FOLDER="$(cd -- "$(dirname -- "$0")" && pwd)"
@@ -76,7 +76,7 @@ case "$ACTION" in
     		{
 				echo "$BEGIN_MARK"
 				echo "export CUSTOM_GLIBC_PATH=\"$CUSTOM_GLIBC_PATH\""
-				echo "export CUSTOM_GLIBC_INTERPRETER=\"$CUSTOM_GLIBC_INTERPRETER\""
+				echo "export CUSTOM_GLIBC_LINKER=\"$CUSTOM_GLIBC_LINKER\""
 				echo "mkdir -p \"$PATCH_WORKSPACE\" 1>/dev/null 2>&1 || true"
 				echo "\"$SCRIPT_FOLDER/patch-with-custom-glibc.sh\" \"node\" \"$VSCODE_SERVER_ROOT\" 1>\"$PATCH_WORKSPACE/patch.log\" 2>&1 || true"
 				echo "$END_MARK" 
