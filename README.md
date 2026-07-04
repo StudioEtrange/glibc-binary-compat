@@ -38,7 +38,6 @@ VS Code Server needs linux minimal requirements : kernel >= 4.18, glibc >=2.28, 
   * The script will autodownload glibc code source to build it.
     ```
     cd $HOME/glibc-binary-compat
-    export NB_PROC="AUTO" # AUTO to use all your processor at build time
     ./build-custom-glibc-runtime.sh "$HOME/custom-glibc2228-runtime" "2.28"
     ```
 
@@ -52,7 +51,8 @@ VS Code Server needs linux minimal requirements : kernel >= 4.18, glibc >=2.28, 
       ```
       * Then inside the distrobox container, you can run this script to build glibc, like above
       ```
-   	  ./build-custom-glibc-runtime.sh $HOME/custom-glibc228-runtime
+      export NB_PROC="5" # By default, value is AUTO to use all your processor at build time
+   	  ./build-custom-glibc-runtime.sh $HOME/custom-glibc228-runtime "2.28"
       ```
 
 
@@ -98,13 +98,13 @@ VS Code Server needs linux minimal requirements : kernel >= 4.18, glibc >=2.28, 
   * https://github.com/microsoft/vscode/pull/235232
   * https://github.com/microsoft/vscode/issues/238873
 
-* needs to patch vs code server with glibc 2.28
-* needs patchelf to patch vs code server binaries (patchelf >=v0.18.x) (https://github.com/NixOS/patchelf)
-* needs to provide a sysroot with glibc 2.28
-  * Classic build glibc 2.28
-  * OR Build glibc using crosstool-NG 
-    * crosstool ng configs from https://github.com/microsoft/vscode-linux-build-agent or https://github.com/hsfzxjy/vscode-remote-glibc-patch/tree/master/configs
-  * OR Extract a precompiled sysroot from https://github.com/microsoft/vscode-linux-build-agent/releases
+* VS Code server requires a sysroot with glibc 2.28
+  * Solutions :
+    * Classic build glibc 2.28
+    * OR Build glibc using crosstool-NG 
+      * crosstool ng configs from https://github.com/microsoft/vscode-linux-build-agent or https://github.com/hsfzxjy/vscode-remote-glibc-patch/tree/master/configs
+    * OR Extract a precompiled sysroot from https://github.com/microsoft/vscode-linux-build-agent/releases
+* we need patchelf to patch VS Code server binaries (patchelf >=v0.18.x) (https://github.com/NixOS/patchelf)
 
 * about vs code server check requirements at launch : https://github.com/microsoft/vscode/blob/e6e9958f8fc8edd2f509ada8b3cf11f88ac8b06d/resources/server/bin/helpers/check-requirements-linux.sh#L20
 

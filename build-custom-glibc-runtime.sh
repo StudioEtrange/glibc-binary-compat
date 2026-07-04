@@ -14,7 +14,7 @@ _CURRENT_RUNNING_DIR="$( cd "$( dirname "." )" && pwd )"
 # 	distrobox create --image oraclelinux:7.9 --name buildenv --yes
 # 	distrobox enter buildenv
 # Then inside the container, you can run this script to build glibc:
-# 	export NB_PROC="5"
+# 	 export NB_PROC="5" # By default, value is AUTO to use all your processor at build time
 # 	./build-custom-glibc-runtime.sh $HOME/custom-glibc228-runtime "$HOME/custom-glibc228-runtime" "2.28"
 #
 # Sample for copying glibc result to /opt/custom-glibc228-runtime
